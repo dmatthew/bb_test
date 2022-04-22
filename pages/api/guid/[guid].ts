@@ -66,7 +66,7 @@ async function getHandler(
     } else {
       return res
         .status(400)
-        .json({ message: `Entity not found with guid: ${req.body.id}` })
+        .json({ message: `Entity not found with guid: ${guid}` })
     }
   }
 }
@@ -76,7 +76,7 @@ async function putHandler(
   res: NextApiResponse
 ): Promise<void> {
   const guid: string = cleanQueryInput(req.query.guid)
-  const user: string = req.body.guid
+  const user: string = req.body.user
   if (!guid) {
     res.json({
       guid: null,
@@ -84,17 +84,17 @@ async function putHandler(
     })
   } else {
     const entity = await updateGuid(guid, user)
-    const response = {
-      guid: entity.guid,
-      name: entity.user,
-    }
 
     if (entity) {
+      const response = {
+        guid: entity.guid,
+        user: entity.user,
+      }
       return res.status(201).json(response)
     } else {
       return res
         .status(400)
-        .json({ message: `Entity not found with guid: ${req.body.id}` })
+        .json({ message: `Entity not found with guid: ${guid}` })
     }
   }
 }

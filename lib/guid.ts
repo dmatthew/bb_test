@@ -22,7 +22,7 @@ export async function createGuid(guid: string, user: string): Promise<any> {
   await client.connect()
   const { rows } = await client.query(
     `
-    INSERT INTO guids ("guid", "user")
+    INSERT INTO "guids" ("guid", "user")
     VALUES ($1, $2)
     ON CONFLICT DO NOTHING
     RETURNING "guid", "user"
@@ -47,7 +47,7 @@ export async function getGuid(guid: string): Promise<any> {
   await client.connect()
   const { rows } = await client.query(
     `
-    SELECT * FROM guids WHERE guid = $1
+    SELECT * FROM "guids" WHERE "guid" = $1
   `,
     [guid]
   )
@@ -64,9 +64,26 @@ export async function getGuid(guid: string): Promise<any> {
 export async function updateGuid(guid: string, user: string): Promise<any> {
   if (!guid || !user) return null;
 
-  // Update guid in database
+  const client = getClient()
+  await client.connect()
+  const { rows } = await client.query(
+    `
+    UPDATE "guids"
+    SET "user" = $1
+    WHERE "guid" = $2
+    RETURNING "guid", "user"
+  `,
+    [user, guid]
+  )
+  await client.end()
+  if (rows.length) {
+    return {
+      guid: rows[0].guid,
+      user: rows[0].user,
+    }
+  }
 
-  return {guid: guid, user: 'Cylance, Inc.'}
+  return null
 }
 
 export async function deleteGuid(guid: string): Promise<boolean> {
@@ -76,7 +93,7 @@ export async function deleteGuid(guid: string): Promise<boolean> {
   await client.connect()
   const { rowCount } = await client.query(
     `
-    DELETE FROM guids WHERE guid = $1
+    DELETE FROM "guids" WHERE "guid" = $1
   `,
     [guid]
   )
