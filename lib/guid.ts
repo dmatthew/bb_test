@@ -1,4 +1,5 @@
 import { Client } from 'pg'
+import { GuidType } from 'lib/types'
 
 function getClient() {
   const sslConfig =
@@ -13,6 +14,19 @@ function getClient() {
     port: parseInt(process.env.DATABASE_PORT),
     ssl: sslConfig,
   })
+}
+
+export async function getAllGuids(): Promise<GuidType[]> {
+  const client = getClient()
+  await client.connect()
+  const { rows } = await client.query(
+    `
+    SELECT "guid", "user"
+    FROM "guids"
+    `
+  )
+  await client.end()
+  return rows
 }
 
 export async function createGuid(guid: string, user: string): Promise<any> {
@@ -99,4 +113,8 @@ export async function deleteGuid(guid: string): Promise<boolean> {
   )
   await client.end()
   return rowCount > 0
+}
+
+export function isValidGuid(guid: string): boolean {
+  return /^[0-9A-Fa-f]{32}$/g.test(guid)
 }

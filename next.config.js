@@ -5,6 +5,10 @@ module.exports = {
         source: '/guid/:guid',
         destination: '/api/guid/:guid',
       },
+      {
+        source: '/guids',
+        destination: '/api/guids',
+      },
     ]
   },
 }
