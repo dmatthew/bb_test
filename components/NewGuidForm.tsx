@@ -19,7 +19,7 @@ export default function newGuidForm({ updateHandler }) {
     )
     updateHandler()
   }
-  
+
   return (
     <form onSubmit={handleFormSubmit}>
       <label htmlFor="guid">Guid</label>

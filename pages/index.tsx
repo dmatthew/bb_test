@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 import GuidList from 'components/GuidList'
 import NewGuidForm from 'components/NewGuidForm'
 
-export default function Home({ data }) {
+export default function Home({ data }): ReactElement {
   const [items, setItems] = useState(data.items)
 
   async function reloadItems() {
