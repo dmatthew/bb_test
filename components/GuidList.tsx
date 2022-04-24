@@ -12,17 +12,21 @@ export default function GuidList({
   
   return (
     <div>
-      <h1>GuidList</h1>
-      {items && items.length > 0 && items.map((guid, index) => {
-        return (
-          <GuidListItem 
-            key={index}
-            guid={guid.guid} 
-            user={guid.user} 
-            updateHandler={updateHandler}
-          />
-        )
-      })}
+      <h1>Guid List</h1>
+      {items && items.length > 0 ? (
+        items.map((guid, index) => {
+          return (
+            <GuidListItem 
+              key={index}
+              guid={guid.guid} 
+              user={guid.user} 
+              updateHandler={updateHandler}
+            />
+          )
+        })
+      ): (
+        <div>No GUIDs have been added. Add them using the form above</div>
+      )}
     </div>
   )
 }

@@ -14,16 +14,13 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  let guid: string = cleanQueryInput(req.query.guid)
   const user: string = req.body.user
   if (!user) {
     return res
         .status(400)
         .json({ message: 'Error: Missing user field' })
   } else {
-    if (!guid) {
-      guid = generateGuid()
-    }
+    let guid = generateGuid()
     const entity = await createGuid(guid, user)
 
     if (entity) {

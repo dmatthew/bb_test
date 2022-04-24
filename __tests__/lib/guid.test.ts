@@ -1,4 +1,4 @@
-import {  isValidGuid } from 'lib/guid'
+import { generateGuid, isValidGuid } from 'lib/guid'
 
 describe('lib/guid::isValidGuid', () => {
   it('returns true with a valid 32 character hexadecimal', () => {
@@ -14,5 +14,14 @@ describe('lib/guid::isValidGuid', () => {
   it('returns false with a valid substring value', () => {
     const isValid = isValidGuid('Z9094E4C980C74043A4B586B420E69DDF')
     expect(isValid).toBeFalsy()
+  })
+})
+
+describe('lib/guid::generateGuid', () => {
+  it('returns a 32 hexadecimal character string', () => {
+    const guid = generateGuid()
+    const isValid = isValidGuid(guid)
+    expect(guid).toHaveLength(32)
+    expect(isValid).toBeTruthy()
   })
 })

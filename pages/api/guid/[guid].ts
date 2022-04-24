@@ -1,5 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { cleanQueryInput, createGuid, deleteGuid, generateGuid, getGuid, updateGuid } from 'lib/guid'
+import {
+  cleanQueryInput,
+  createGuid,
+  deleteGuid,
+  isValidGuid,
+  generateGuid,
+  getGuid,
+  updateGuid
+} from 'lib/guid'
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,13 +31,16 @@ async function postHandler(
   let guid: string = cleanQueryInput(req.query.guid)
   const user: string = req.body.user
   if (!user) {
-    res.json({
-      guid: null,
-      user: '',
-    })
+    return res
+        .status(500)
+        .json({ message: 'Error: missing user field' })
   } else {
     if (!guid) {
       guid = generateGuid()
+    } else if (!isValidGuid(guid)) {
+      return res
+        .status(400)
+        .json({ message: 'Error: invalid GUID' })
     }
     const entity = await createGuid(guid, user)
 
@@ -55,7 +66,7 @@ async function getHandler(
   if (!guid) {
     return res
         .status(400)
-        .json({ message: 'Error: Missing guid' })
+        .json({ message: 'Error: Missing guid.' })
   } else {
     const entity = await getGuid(guid)
 
@@ -106,10 +117,9 @@ async function deleteHandler(
 ): Promise<void> {
   const guid: string = cleanQueryInput(req.query.guid)
   if (!guid) {
-    res.json({
-      guid: null,
-      user: '',
-    })
+    return res
+        .status(400)
+        .json({ message: 'Error: missing guid' })
   } else {
     const success = await deleteGuid(guid)
     return res.status(201).json({})

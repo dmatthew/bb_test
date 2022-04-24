@@ -1,5 +1,6 @@
 import { ReactElement, useState } from "react"
 import EditGuidListItemForm from "components/EditGuidListItemForm"
+import styles from './GuidListItem.module.css'
 
 export default function GuidListItem({
   guid, user, updateHandler
@@ -39,27 +40,25 @@ export default function GuidListItem({
   }
   
   return (
-    <div>
+    <div className={styles.container}>
       {isEditing ? (
-        <div>
-          <EditGuidListItemForm
-            guid={guid}
-            user={user}
-            onSave={handleSave}
-            onCancel={() => setIsEditing(false)}
-          />
-        </div>
+        <EditGuidListItemForm
+          guid={guid}
+          user={user}
+          onSave={handleSave}
+          onCancel={() => setIsEditing(false)}
+        />
       ): (
-        <div>
-          <div>{guid}</div>
-          <div>{user}</div>
-          <div>
+        <>
+          <div className={styles.column}>{guid}</div>
+          <div className={styles.column}>{user}</div>
+          <div className={styles.column}>
             <button onClick={handleDelete}>Delete</button>
           </div>
-          <div>
+          <div className={styles.column}>
             <button onClick={() => setIsEditing(true)}>Edit</button>
           </div>
-        </div>
+        </>
       )}
     </div>
   )
