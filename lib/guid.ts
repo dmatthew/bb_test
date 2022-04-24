@@ -1,5 +1,6 @@
 import { Client } from 'pg'
 import { GuidType } from 'lib/types'
+import crypto from 'crypto'
 
 function getClient() {
   const sslConfig =
@@ -115,6 +116,17 @@ export async function deleteGuid(guid: string): Promise<boolean> {
   return rowCount > 0
 }
 
+export function generateGuid(): string {
+  return crypto.randomBytes(16).toString('hex').toUpperCase()
+}
+
 export function isValidGuid(guid: string): boolean {
-  return /^[0-9A-Fa-f]{32}$/g.test(guid)
+  return /^[0-9A-F]{32}$/g.test(guid)
+}
+
+export function cleanQueryInput(input: string | string[]): string {
+  if (Array.isArray(input)) {
+    input = input.length > 0 ? input[0] : ''
+  }
+  return input
 }

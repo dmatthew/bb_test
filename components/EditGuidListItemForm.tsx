@@ -1,22 +1,16 @@
 import React, { useState } from "react";
 
 export default function EditGuidListItemForm({guid, user, onSave, onCancel}) {
-  const [guidInput, setGuidInput] = useState(guid)
   const [userInput, setUserInput] = useState(user)
 
   function handleSave(event: React.FormEvent<HTMLButtonElement>) {
     event.preventDefault()
-    onSave(guidInput, userInput)
+    onSave(guid, userInput)
   }
 
   return (
     <form>
-      <input
-        type="text"
-        value={guidInput}
-        name="guid"
-        onChange={(e) => setGuidInput(e.target.value)}
-      />
+      <div>{guid}</div>
       <input
         type="text"
         value={userInput}

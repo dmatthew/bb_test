@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { createGuid, deleteGuid, getGuid, updateGuid } from 'lib/guid'
+import { cleanQueryInput, createGuid, deleteGuid, generateGuid, getGuid, updateGuid } from 'lib/guid'
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +20,7 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  const guid: string = cleanQueryInput(req.query.guid)
+  let guid: string = cleanQueryInput(req.query.guid)
   const user: string = req.body.user
   if (!user) {
     res.json({
@@ -28,6 +28,9 @@ async function postHandler(
       user: '',
     })
   } else {
+    if (!guid) {
+      guid = generateGuid()
+    }
     const entity = await createGuid(guid, user)
 
     if (entity) {
@@ -38,7 +41,7 @@ async function postHandler(
       return res.status(201).json(response)
     } else {
       return res
-        .status(400)
+        .status(500)
         .json({ message: `Could not create new GUID` })
     }
   }
@@ -50,10 +53,9 @@ async function getHandler(
 ): Promise<void> {
   const guid: string = cleanQueryInput(req.query.guid)
   if (!guid) {
-    res.json({
-      guid: null,
-      user: '',
-    })
+    return res
+        .status(400)
+        .json({ message: 'Error: Missing guid' })
   } else {
     const entity = await getGuid(guid)
 
@@ -78,10 +80,9 @@ async function putHandler(
   const guid: string = cleanQueryInput(req.query.guid)
   const user: string = req.body.user
   if (!guid) {
-    res.json({
-      guid: null,
-      user: '',
-    })
+    return res
+        .status(400)
+        .json({ message: 'Error: Missing guid' })
   } else {
     const entity = await updateGuid(guid, user)
 
@@ -113,11 +114,4 @@ async function deleteHandler(
     const success = await deleteGuid(guid)
     return res.status(201).json({})
   }
-}
-
-function cleanQueryInput(input: string | string[]): string {
-  if (Array.isArray(input)) {
-    input = input.length > 0 ? input[0] : ''
-  }
-  return input
 }

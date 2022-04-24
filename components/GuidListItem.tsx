@@ -37,6 +37,7 @@ export default function GuidListItem({
     )
     updateHandler()
   }
+  
   return (
     <div>
       {isEditing ? (

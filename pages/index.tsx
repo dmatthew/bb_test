@@ -6,10 +6,8 @@ export default function Home({ data }): ReactElement {
   const [items, setItems] = useState(data.items)
 
   async function reloadItems() {
-    console.log('reloadItems!')
     const response = await fetch('/guids')
     const data = await response.json()
-    console.log('data',data)
     setItems(data.items)
   }
 
