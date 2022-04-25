@@ -12,7 +12,7 @@ export default function GuidList({
   
   return (
     <div>
-      <h1>Guid List</h1>
+      <h2>GUID List</h2>
       {items && items.length > 0 ? (
         items.map((guid, index) => {
           return (

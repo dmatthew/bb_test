@@ -13,11 +13,12 @@ export default function Home({ data }): ReactElement {
 
   return (
     <div className="container">
-      <h1 className="title">
-        BB Coding Test
+      <h1>
+        BlackBerry Coding Test - Matthew Davis
       </h1>
 
       <main>
+        <h2>Add GUID</h2>
         <NewGuidForm updateHandler={reloadItems} />
         <GuidList items={items} updateHandler={reloadItems} />
       </main>

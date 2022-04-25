@@ -104,14 +104,24 @@ export async function deleteGuid(guid: string): Promise<boolean> {
   return rowCount > 0
 }
 
+/**
+ * Creates a 32 character hexadecimal string.
+ */
 export function generateGuid(): string {
   return crypto.randomBytes(16).toString('hex').toUpperCase()
 }
 
+/**
+ * Checks whether an input string is a valid GUID.
+ */
 export function isValidGuid(guid: string): boolean {
   return /^[0-9A-F]{32}$/g.test(guid)
 }
 
+/**
+ * Converts the query input to a string if it is formatted as an array of strings.
+ * This application only handles input as a single value.
+ */
 export function cleanQueryInput(input: string | string[]): string {
   if (Array.isArray(input)) {
     input = input.length > 0 ? input[0] : ''
