@@ -1,25 +1,10 @@
-import { Client } from 'pg'
 import { GuidType } from 'lib/types'
 import crypto from 'crypto'
-
-function getClient() {
-  const sslConfig =
-    process.env.NODE_ENV === 'development'
-      ? undefined //SSL not currently configured in local development
-      : { rejectUnauthorized: false }
-  return new Client({
-    user: process.env.DATABASE_USER,
-    host: process.env.DATABASE_HOST,
-    database: process.env.DATABASE_NAME,
-    password: process.env.DATABASE_PASS,
-    port: parseInt(process.env.DATABASE_PORT),
-    ssl: sslConfig,
-  })
-}
+import { getCachedValue, setCacheValue } from 'lib/cache'
+import { getDBClient } from 'lib/database'
 
 export async function getAllGuids(): Promise<GuidType[]> {
-  const client = getClient()
-  await client.connect()
+  const client = getDBClient()
   const { rows } = await client.query(
     `
     SELECT "guid", "user"
@@ -33,8 +18,7 @@ export async function getAllGuids(): Promise<GuidType[]> {
 export async function createGuid(guid: string, user: string): Promise<any> {
   if (!guid || !user) return null;
 
-  const client = getClient()
-  await client.connect()
+  const client = getDBClient()
   const { rows } = await client.query(
     `
     INSERT INTO "guids" ("guid", "user")
@@ -58,8 +42,12 @@ export async function createGuid(guid: string, user: string): Promise<any> {
 export async function getGuid(guid: string): Promise<any> {
   if (!guid) return null;
 
-  const client = getClient()
-  await client.connect()
+  const cachedValue = await getCachedValue(guid)
+  if (cachedValue) {
+    return JSON.parse(cachedValue)
+  }
+
+  const client = getDBClient()
   const { rows } = await client.query(
     `
     SELECT * FROM "guids" WHERE "guid" = $1
@@ -68,10 +56,12 @@ export async function getGuid(guid: string): Promise<any> {
   )
   await client.end()
   if (rows.length) {
-    return {
+    const result = {
       guid: rows[0].guid,
       user: rows[0].user,
     }
+    await setCacheValue(guid, JSON.stringify(result))
+    return result
   }
   return null
 }
@@ -79,8 +69,7 @@ export async function getGuid(guid: string): Promise<any> {
 export async function updateGuid(guid: string, user: string): Promise<any> {
   if (!guid || !user) return null;
 
-  const client = getClient()
-  await client.connect()
+  const client = getDBClient()
   const { rows } = await client.query(
     `
     UPDATE "guids"
@@ -104,8 +93,7 @@ export async function updateGuid(guid: string, user: string): Promise<any> {
 export async function deleteGuid(guid: string): Promise<boolean> {
   if (!guid) return false;
 
-  const client = getClient()
-  await client.connect()
+  const client = getDBClient()
   const { rowCount } = await client.query(
     `
     DELETE FROM "guids" WHERE "guid" = $1
